@@ -25,6 +25,7 @@ async function run() {
         const winterCollection = database.collection('winter');
         const ordersCollection = database.collection('orders');
         const usersCollection = database.collection('users');
+        const reviewsCollection = database.collection('reviews');
         console.log(usersCollection);
 
         //POST WinterCollections API
@@ -114,10 +115,9 @@ async function run() {
             const result = await usersCollection.updateOne(filter, updateDoc, options);
             res.json(result);
         });
-
+        //Make Admin
         app.put('/users/admin', async (req, res) => {
             const user = req.body;
-            // console.log('put', user);
             const filter = { email: user.email };
             const updateDoc = { $set: { role: 'admin' } };
             const result = await usersCollection.updateOne(filter, updateDoc);
@@ -143,6 +143,19 @@ async function run() {
             } else {
                 res.json({ admin: false })
             }
+        })
+
+        //POST Reviews API
+        app.post('/reviews', async (req, res) => {
+            const reviews = req.body;
+            const result = await reviewsCollection.insertOne(reviews);
+            res.json(result);
+        })
+        //GET Reviews API
+        app.get('/reviews', async (req, res) => {
+            const cursor = reviewsCollection.find({});
+            const cars = await cursor.toArray();
+            res.send(cars);
         })
 
     }
